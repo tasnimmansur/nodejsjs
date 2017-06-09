@@ -1,7 +1,10 @@
-var express = require('express'),
-    http = require('http'),
-    fs = require('fs'),
-    mongoose = require('mongoose');
+var express = require('express');
+var app = express();
+var http = require('http');
+var fs = require('fs');
+var mongoose = require('mongoose');
+
+var bodyParser = require('body-parser');
 
 mongoose.connect('mongodb://localhost/dbs', function(err){
     if(err){
@@ -10,6 +13,10 @@ mongoose.connect('mongodb://localhost/dbs', function(err){
         console.log('Connected to mongodb!');
     }
 });
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 //Lets read our html file only once, at the very beginning when we first start our nodejs process
 fs.readFile('./index.html', function (err, html) {
@@ -32,13 +39,9 @@ fs.readFile('./index.html', function (err, html) {
 
     //Now lets start our server
     http.createServer(function(request, response) {
-        //The code here is called whenever a new http request is sent to the server
-        //There are two variables accessible here, one is `request` which contains
-        //data about the original request, while `response` is an object with methods
-        //allowing you to respond
+        app.post('/',urlencodedParser, function (req, res) {
 
-        //Here we check what kind of method the browser is using, if its POSTing
-        //data then we create a filter from the body
+        });
         if (request.method == "POST") {
             new Filter({
                 name: request.body.Name,
