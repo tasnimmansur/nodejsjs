@@ -1,56 +1,47 @@
 var express = require('express');
 var app = express();
-var http = require('http');
-var fs = require('fs');
 var mongoose = require('mongoose');
-
 var bodyParser = require('body-parser');
-
-mongoose.connect('mongodb://localhost/dbs', function(err){
-    if(err){
-        console.log(err);
-    } else{
-        console.log('Connected to mongodb!');
-    }
-});
-
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017/newdb";
+var fs = require("fs");
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-fs.readFile('../Views/index.ejs', function (err, html) {
+fs.readFile('./index.html', function (err, html) {
     if (err) {
         throw err;
     }
 
     var filterSchema = mongoose.Schema({
-        name: String,
+        Name: String,
         password: String,
         created: {type: Date, default: Date.now}
     });
 
-    var Filter = mongoose.model('Store', filterSchema);
+    var resp = mongoose.model('Store', filterSchema);
 
-    http.createServer(function (request, response) {
 
-        app.post('/', function (req, res) {
+app.post('/', function (req, res) {
+    res.status(200).send(req.body);
+    resp = {
+        Name:req.body.Name,
+        password:req.body.password
+        };
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
 
-            res.status(200).send(req.body);
+        db.collection("customers").insertOne(resp, function(err, res) {
+            if (err) throw err;
+            console.log("1 record inserted");
 
-            Filter = {
-                Name: req.body.Name,
-                password: req.body.password
-            };
-            MongoClient.connect(url, function (err, db) {
-                if (err) throw err;
-
-                db.collection("Store").insertOne(response, function (err, res) {
-                    if (err) throw err;
-                    console.log("1 record inserted");
-
-                    db.close();
-                });
-            });
-        }).listen(8089);
-    })
+            db.close();
+        });
+    });
 });
+
+var port = process.env.PORT || 8083;
+app.listen(port);
+console.log('Listening on http://localhost:' + port)
