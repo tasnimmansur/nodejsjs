@@ -19,26 +19,24 @@ app.use(bodyParser.urlencoded({
 }));
 
 fs.readFile('./index.html', function (err, html) {
-
     if (err) {
         throw err;
     }
 
-    var filter_CheckBoxSchema = mongoose.Schema({
-        name: String,
+    var filterSchema = mongoose.Schema({
+        Name: String,
         password: String,
         created: {type: Date, default: Date.now}
     });
 
-    var Filter = mongoose.model('Store', filter_CheckBoxSchema);
+    var Filter = mongoose.model('Store', filterSchema);
 
     http.createServer(function(request, response) {
-    console.log(request);
+        console.log(request.body,"......");
         if (request.method == "POST") {
             new Filter({
-                name: request.body.Name,
-                password: request.body.password,
-
+                Name: request.body.Name,
+                password: request.body.password
             }).save(function(err, doc){
                 if(err)
                 {
