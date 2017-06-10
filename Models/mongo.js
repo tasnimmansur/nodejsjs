@@ -1,3 +1,5 @@
+var express     =   require("express");
+var app         =   express();
 var mongoose    =   require("mongoose");
 var http = require ('http');
 
@@ -25,5 +27,8 @@ var userSchema  = {
 };
 // create model(table)
 module.exports = mongoose.model('Store',userSchema);
+
+app.listen(808);
+console.log("Listening to PORT 8085");
 
 

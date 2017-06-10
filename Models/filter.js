@@ -3,14 +3,10 @@ var app = express();
 var http = require('http');
 var fs = require('fs');
 var mongoose = require('mongoose');
-require("/mongo");
-//var router=express.Router();
 
 var bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({"extended" : false}));
 
-/*mongoose.connect('mongodb://localhost/dbs', function(err){
+mongoose.connect('mongodb://localhost/dbs', function(err){
     if(err){
         console.log(err);
     } else{
@@ -20,26 +16,27 @@ app.use(bodyParser.urlencoded({"extended" : false}));
 
 app.use(bodyParser.urlencoded({
     extended: true
-}));*/
-
+}));
 
 fs.readFile('./index.html', function (err, html) {
+
     if (err) {
         throw err;
     }
 
-    var userSchema = mongoose.Schema({
-        Name: String,
+    var filter_CheckBoxSchema = mongoose.Schema({
+        name: String,
         password: String,
         created: {type: Date, default: Date.now}
     });
 
-    var Filter = mongoose.model('Store', userSchema);
+    var Filter = mongoose.model('Store', filter_CheckBoxSchema);
 
     http.createServer(function(request, response) {
+    console.log(request);
         if (request.method == "POST") {
             new Filter({
-                Name: request.body.Name,
+                name: request.body.Name,
                 password: request.body.password,
 
             }).save(function(err, doc){
