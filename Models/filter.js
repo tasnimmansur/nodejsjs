@@ -3,10 +3,14 @@ var app = express();
 var http = require('http');
 var fs = require('fs');
 var mongoose = require('mongoose');
+require("/mongo");
+//var router=express.Router();
 
 var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({"extended" : false}));
 
-mongoose.connect('mongodb://localhost/dbs', function(err){
+/*mongoose.connect('mongodb://localhost/dbs', function(err){
     if(err){
         console.log(err);
     } else{
@@ -16,35 +20,26 @@ mongoose.connect('mongodb://localhost/dbs', function(err){
 
 app.use(bodyParser.urlencoded({
     extended: true
-}));
+}));*/
 
-//Lets read our html file only once, at the very beginning when we first start our nodejs process
+
 fs.readFile('./index.html', function (err, html) {
-
-    //Now in here there are two variables which are accessible, `err` and `html`
-
     if (err) {
         throw err;
     }
 
-    //Create our schema before starting server
-    var filter_CheckBoxSchema = mongoose.Schema({
-        name: String,
+    var userSchema = mongoose.Schema({
+        Name: String,
         password: String,
         created: {type: Date, default: Date.now}
     });
 
-    //And now the model as well
-    var Filter = mongoose.model('Store', filter_CheckBoxSchema);
+    var Filter = mongoose.model('Store', userSchema);
 
-    //Now lets start our server
     http.createServer(function(request, response) {
-        app.post('/',urlencodedParser, function (req, res) {
-
-        });
         if (request.method == "POST") {
             new Filter({
-                name: request.body.Name,
+                Name: request.body.Name,
                 password: request.body.password,
 
             }).save(function(err, doc){
@@ -58,7 +53,6 @@ fs.readFile('./index.html', function (err, html) {
             });
         }
         else {
-            //This must have been a GET request, lets just send `html` instead
             response.writeHeader(200, {"Content-Type": "text/html"});
             response.write(html);
             response.end();
