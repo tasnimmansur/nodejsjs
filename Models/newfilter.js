@@ -1,49 +1,50 @@
+var User=require('./mongo');
 var express = require('express');
-var app = express();
-var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/dbs";
+var app = express();
 var fs = require("fs");
 app.use(bodyParser.json());
-
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-fs.readFile('./index.html', function (err, html) {
-    if (err) {
-        throw err;
-    }
 
-    var filter = mongoose.Schema({
-        Name: String,
-        password: String,
-        created: {type: Date, default: Date.now}
-    });
-
-
-    var resp = mongoose.model('Store', filter);
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', function (req, res) {
+    res.sendFile('./index.html', {root: path.join(__dirname, 'public')});
 });
+
+
+/*app.use(express.static(__dirname + '/public'));
+app.use(app.router);
+
+app.get('/', function (req, res) {
+    //res.sendFile(__dirname +'./index.html');
+    res.render('index.html');
+});*/
 
 app.post('/', function (req, res) {
-    res.status(200).send(req.body);
-    resp = {
-        Name:req.body.Name,
-        password:req.body.password
-        };
-    MongoClient.connect(url, function(err, db) {
-        if (err) throw err;
-
-        db.collection("Store").insertOne(resp, function(err, res) {
-            if (err) throw err;
-            console.log("1 record inserted");
-
-            db.close();
-        });
+    var data =new User( {
+        Name: req.body.Name,
+        Password: req.body.Password
     });
+    data.save(function(err,use){
+        if(err){
+            console.log('error occured');
+        }
+        console.log('recored inserted');
+        console.log('detail'+use);
+    });
+    res.end(JSON.stringify(req.body));
+
 });
 
-var port = process.env.PORT || 8083;
-app.listen(port);
-console.log('Listening on http://localhost:' + port)
+app.get('/', function (req, res) {
+    User.find({},function(err,data) {
+        if(err){
+            console.log('error occured');
+        }
+        console.log(data);
+        res.end( JSON.stringify(data));
+    });
+});
