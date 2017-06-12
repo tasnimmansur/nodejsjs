@@ -8,8 +8,6 @@ var uristring =
     process.env.MONGOHQ_URL ||
     'mongodb://localhost/dbs';
 
-//mongoose.connect('mongodb://localhost:27017/dbs');
-
 mongoose.connect(uristring, function (err, res) {
     if (err) {
         console.log ('ERROR connecting to: ' + uristring + '. ' + err);
@@ -20,15 +18,15 @@ mongoose.connect(uristring, function (err, res) {
 
 // create instance of Schema
 var mongoSchema =   mongoose.Schema;
-// create User schema
+
 var userSchema  = {
     "Name" : String,
     "password" : String
 };
-// create model(table)
+
 module.exports = mongoose.model('Store',userSchema);
 
-app.listen(808);
+app.listen(8085);
 console.log("Listening to PORT 8085");
 
 

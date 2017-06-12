@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-fs.readFile('./index.html', function (err, html) {
+fs.readFile('../Views/index.ejs', function (err, html) {
     if (err) {
         throw err;
     }
@@ -26,13 +26,12 @@ fs.readFile('./index.html', function (err, html) {
     var filterSchema = mongoose.Schema({
         Name: String,
         password: String,
-        created: {type: Date, default: Date.now}
     });
 
     var Filter = mongoose.model('Store', filterSchema);
 
     http.createServer(function(request, response) {
-        console.log(request.body,"......");
+        //console.log(request.body,"......");
         if (request.method == "POST") {
             new Filter({
                 Name: request.body.Name,
@@ -47,10 +46,9 @@ fs.readFile('./index.html', function (err, html) {
                 }
             });
         }
-        else {
-            response.writeHeader(200, {"Content-Type": "text/html"});
-            response.write(html);
+
             response.end();
-        }
-    }).listen(8083);
+
+    })
+    app.listen(8083);
 });
